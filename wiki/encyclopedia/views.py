@@ -12,7 +12,8 @@ def index(request):
 def entry(request, entry):
     if request.method == "GET":
 
-        # Checking whether entry is in entries or not 
+        # Checking whether entry is in entries or not
+        key = None 
         entries = util.list_entries()        
         for i in range(len(entries)):
             if entry.upper() == entries[i].upper():          
