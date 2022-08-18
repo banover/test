@@ -12,16 +12,22 @@ def index(request):
 def entry(request, entry):
     if request.method == "GET":
 
-        # Checking whether input entry exists or not
-        entries = util.list_entries()
-        if entry in entries:
-            input_entry = entry
+        # Checking whether entry is in entries or not 
+        entries = util.list_entries()        
+        for i in range(len(entries)):
+            if entry.upper() == entries[i].upper():          
+                key = i
+                break
+
+        # Assigning entries[i] to input entry
+        if not key == None:
+            input_entry = entries[key]
         else:
             input_entry = None
 
         # Rendering Entry page
         return render(request, "encyclopedia/entry.html", {
-            #"entries": util.list_entries()                   /wiki/ 는 가능, /wiki/css(etc.) 가 구현못함
+            #"entries": util.list_entries()                   
             "input_entry": input_entry,
             "contents": util.get_entry(input_entry)
         })

@@ -15,11 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
-import encyclopedia
+from encyclopedia import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', include("encyclopedia.urls")),
-    path('wiki/', include("encyclopedia.urls"))
+    path('', views.index, name="index"),
+    path('wiki/', include("encyclopedia.urls")) # error페이지 띄어야함 try 활용해보자
 ]

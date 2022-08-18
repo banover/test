@@ -1,21 +1,22 @@
 {% extends "encyclopedia/layout.html" %}
 
-    {% if not input_entry == None %}
-        {% block title %}
+    {% block title %}
+
+        {% if not input_entry == None %}
             {{ input_entry }}   
-        {% endblock %}
-
-        {% block body %}
-            {{ contents }}
-        {% endblock %}
-
-    {% else %}
-        {% block title %}
+        {% else %}
             None entry
-        {% endblock %}
+        {% endif %}
+        
 
-        {% block body %}
-            <h1>No exist entry!</h1>
-        {% endblock %}
+    {% endblock %}        
     
-    {% endif %}
+    {% block body %}
+
+        {% if not input_entry == None %}
+            {{ contents }}
+        {% else %}
+            <h1>No exist entry!</h1>
+        {% endif %}
+
+    {% endblock %}
