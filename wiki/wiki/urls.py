@@ -20,5 +20,5 @@ from encyclopedia import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name="index"),
-    path('wiki/', include("encyclopedia.urls")) # error페이지 띄어야함 try 활용해보자
+    path('wiki/', include("encyclopedia.urls")) 
 ]
