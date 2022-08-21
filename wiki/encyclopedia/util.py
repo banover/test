@@ -35,3 +35,21 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+# Finding slightly similar entry and return all the entries which is similar
+def compare(search,entry_list):
+
+    # Setting variable for compare
+    length = len(search)
+    entries = len(entry_list)
+    results = []
+
+    # Appending entries into list based on search
+    for i in range(length):
+        substring = search[i:i+2]
+        for j in range(entries):
+            if substring.upper() in entry_list[j].upper():
+                results.append(entry_list[j])    
+                                
+    # Return list
+    return results
