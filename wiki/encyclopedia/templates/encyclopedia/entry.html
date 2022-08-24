@@ -14,7 +14,7 @@
     {% block body %}
 
         {% if not input_entry == None %}
-            {{ contents|safe }} <!-- safe 제거 후 test해보기-->
+            {{ contents|safe }}
         {% else %}
             <h1>No exist entry!</h1>
         {% endif %}

@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from . import util
 import markdown
-#from django.urls import reverse
-#from django.http import HttpResponseRedirect
+from django import forms
+from django.contrib import messages
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -71,7 +74,59 @@ def search(request):
         else:
             input_entry = None
 
-        return render(request, "encyclopedia/entry.html", {                              
+        return render(request, "encyclopedia/entry.html", {
             "input_entry": input_entry,
             "contents": contents
         })
+
+def create(request):
+
+    class NewTaskForm(forms.Form):        
+        form = forms.CharField(label="Page Title")
+        
+
+    if request.method == "GET":
+
+        entries = util.list_entries()
+        #messages.warning(request, 'Your title already exists.')
+
+        return render(request, "encyclopedia/create.html", {
+            "form": NewTaskForm(),
+            #"entries": entries
+        })
+
+    # post로 create.html에서 title과 textarea 정보 form전달 될 때, 페이지 만들어 주던가 오류페이지 띄우던가
+    else:
+
+        #title = request.POST["title"]
+        title = NewTaskForm(request.POST)
+
+        if title.is_valid():
+            entry = title.cleaned_data["form"]
+            content = request.POST.get("content")
+            #if len(content) > 0:
+            #    return render(request,"encyclopedia/test.html", {
+            #        "entry" : content
+            #    })
+            #content = request.POST["content"]
+            entries = util.list_entries()
+
+            for i in range(len(entries)):
+                if entry.upper() == entries[i].upper():
+                    #messages.warning(request, 'Your title already exists.') 에러메세지만 씀녀 끝
+                    return render(request,"encyclopedia/create.html", {
+                        "form" : title
+                    })
+            #
+            with open(f'entries/{entry}.md', "w") as f:
+                f.write(content)
+
+            #
+            return HttpResponseRedirect(f'/wiki/{entry}')
+        
+        # 여기도 메세지 추가해주면 좋을듯?  
+        else:            
+            return render(request,"encyclopedia/create.html")
+
+
+            
