@@ -6,7 +6,9 @@ from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 import os
-
+from random import seed
+from random import randint
+from datetime import datetime
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -193,7 +195,18 @@ def update(request, entry):
         return HttpResponseRedirect(f'/wiki/{entry_title}')
 
 
-        
+def random(request):
+    if request.method == "GET":
+
+        entries = util.list_entries()
+        number_of_entries = len(entries) - 1
+
+        seed(datetime.now())
+        random_value = randint(0, number_of_entries)
+        random_entry = entries[random_value]
+
+        return HttpResponseRedirect(f'/wiki/{random_entry}')
+
 
 
 

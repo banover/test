@@ -21,5 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name="index"),
     path('wiki/', include("encyclopedia.urls")),
-    path('create/', views.create, name="create")
+    path("search/", views.search, name="search"),
+    path('create/', views.create, name="create"),
+    path("update/<str:entry>", views.update, name="update"),
+    path("random/", views.random, name="random" )
 ]
