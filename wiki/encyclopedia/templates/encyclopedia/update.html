@@ -1,21 +1,21 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    Create
+    Update
 {% endblock %}
 
 {% block body %}
-    <h1>Create entry</h1>
+    <h1>Update entry</h1>
 
-    <form action="/wiki/create/" method="post">
+    <form action="/wiki/update/{{ title }}" method="post">
         <!--<p><label for="create_title">Page Title</label></p>
         <input id="create_title" type="text" name="title" placeholder=" page title" size="100px" autofocus required><br><br>-->
         {% csrf_token %}
         {{ form }}
-        <p><label for="create_content">Contents</label></p>
-        <textarea id="create_content" name="content" placeholder=" Enter your entry and content(Markdown is available)" rows="5" cols="40" required></textarea>
+        <p><label for="update_content">Contents</label></p>
+        <textarea id="update_content" name="update_content"  rows="5" cols="40" required>{{ content }}</textarea>
         <br><br>
-        <input type="submit" value="Create">
+        <input type="submit" value="Update">
         {% if messages %}
             {% for message in messages %}
                 

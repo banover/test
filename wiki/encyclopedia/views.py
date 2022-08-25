@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import os
 
 
 def index(request):
@@ -81,52 +82,119 @@ def search(request):
 
 def create(request):
 
+    # Making a form class
     class NewTaskForm(forms.Form):        
-        form = forms.CharField(label="Page Title")
-        
+        form = forms.CharField(label="Page Title", max_length="31")        
 
+    # When the method is get
     if request.method == "GET":
 
-        entries = util.list_entries()
-        #messages.warning(request, 'Your title already exists.')
+        # Getting list of entries
+        entries = util.list_entries()     
 
+        # Rendering create.html file with a form
         return render(request, "encyclopedia/create.html", {
-            "form": NewTaskForm(),
-            #"entries": entries
+            "form": NewTaskForm()            
         })
 
-    # post로 create.html에서 title과 textarea 정보 form전달 될 때, 페이지 만들어 주던가 오류페이지 띄우던가
+    # When the method is post
     else:
-
-        #title = request.POST["title"]
+        
+        # Store data from post in title
         title = NewTaskForm(request.POST)
 
-        if title.is_valid():
+        # Preparing data from post to check duplication of entries
+        if title.is_valid():            
             entry = title.cleaned_data["form"]
+
+            # Checking validation of title
+            if '/' in entry:
+                messages.warning(request, 'title is unvalid.')
+                return render(request,"encyclopedia/create.html", {
+                    "form": NewTaskForm()
+                })
+
             content = request.POST.get("content")
-            #if len(content) > 0:
-            #    return render(request,"encyclopedia/test.html", {
-            #        "entry" : content
-            #    })
-            #content = request.POST["content"]
             entries = util.list_entries()
 
+            # Checking whether entry is already exist in entries
             for i in range(len(entries)):
                 if entry.upper() == entries[i].upper():
-                    #messages.warning(request, 'Your title already exists.') 에러메세지만 씀녀 끝
+
+                    # Making a message opened when there is duplication
+                    messages.warning(request, 'Your title already exists.')
+
+                    # Rendering create.html with duplicated form data
                     return render(request,"encyclopedia/create.html", {
-                        "form" : title
+                        "form" : title                        
                     })
-            #
-            with open(f'entries/{entry}.md', "w") as f:
+            # Open new markdown file and write content data from post 
+            #with open(f'entries/{entry}.md', "w") as f:
+            with open('entries/%s.md' % entry, "w") as f:
                 f.write(content)
 
-            #
+            # Redirecting to maked new page
             return HttpResponseRedirect(f'/wiki/{entry}')
         
-        # 여기도 메세지 추가해주면 좋을듯?  
-        else:            
-            return render(request,"encyclopedia/create.html")
+        #  When title is not valid
+        else:
+            messages.warning(request, 'title is unvalid.')
+            return render(request,"encyclopedia/create.html", {
+                "form": NewTaskForm()
+            })
 
 
-            
+def update(request, entry):
+
+    # Making form class used in create function
+    class NewTaskForm(forms.Form):
+        form = forms.CharField(label="Page Title", max_length="31", initial=f"{entry}")
+
+    # When the method is get
+    if request.method == "GET":
+
+        # Rendering update.html file with initialed title and content
+        title = entry
+        content = util.get_entry(title)
+        return render(request, "encyclopedia/update.html", {
+            "title" : title,
+            "content" : content,
+            "form" : NewTaskForm()
+        })
+    
+    # When the method is post
+    else:
+
+        # Storing updated title and content in valuables
+        title = NewTaskForm(request.POST)
+        content = request.POST.get("update_content")
+
+        if title.is_valid():            
+            entry_title = title.cleaned_data["form"]
+
+            # Checking validation of title
+            if '/' in entry_title:
+                messages.warning(request, 'title is unvalid.')
+                return render(request,"encyclopedia/update.html", {
+                    "form": title,
+                    "content": content
+                })
+        
+        # Open the updated file and rewrite content
+        with open('entries/%s.md' % entry, "w") as f:
+            f.write(content)
+        
+        # Changing old file name to new name
+        old_name = f'entries/{entry}.md'
+        new_name = f'entries/{entry_title}.md'
+        os.rename(old_name, new_name)
+
+        # Redirect to updated page
+        return HttpResponseRedirect(f'/wiki/{entry_title}')
+
+
+        
+
+
+
+
